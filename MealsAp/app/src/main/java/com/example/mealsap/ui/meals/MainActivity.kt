@@ -30,6 +30,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MealsCategoriesScreen() {
     val viewModel : MealsCategoriesViewModel = viewModel() //(Ch74, 16:00有說明,簡單來說只要存在過,就不會再instantiated一次)
+    val meals = viewModel.getMeals()
     Text(text = "Hello Compose!")
 }
 
