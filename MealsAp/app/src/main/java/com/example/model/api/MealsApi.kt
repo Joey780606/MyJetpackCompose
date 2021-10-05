@@ -25,7 +25,7 @@ class MealsWebService {  //A class that returns the actual retrofit response
         api = retrofit.create(MealsApi::class.java)
     }
 
-    fun getMeals(): Call<MealsCategoriesResponse> {
+    fun getMeals(): Call<MealsCategoriesResponse> {  // MealsCategoriesResponse is in Responses.kt
         return api.getMeals()
     }
 
