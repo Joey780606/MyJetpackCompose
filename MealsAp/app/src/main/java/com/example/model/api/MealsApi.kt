@@ -11,6 +11,7 @@ import retrofit2.http.GET
  *  Reference website:
  *  1. https://square.github.io/retrofit/
  *  2. https://www.themealdb.com/
+ *  3. Ch82: Before 1:50
  */
 
 class MealsWebService {  //A class that returns the actual retrofit response
@@ -25,12 +26,12 @@ class MealsWebService {  //A class that returns the actual retrofit response
         api = retrofit.create(MealsApi::class.java)
     }
 
-    fun getMeals(): Call<MealsCategoriesResponse> {  // MealsCategoriesResponse is in Responses.kt
+    suspend fun getMeals(): MealsCategoriesResponse {  // MealsCategoriesResponse is in Responses.kt
         return api.getMeals()
     }
 
     interface MealsApi {
         @GET("categories.php")
-        fun getMeals(): Call<MealsCategoriesResponse>
+        suspend fun getMeals(): MealsCategoriesResponse
     }
 }
