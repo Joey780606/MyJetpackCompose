@@ -36,18 +36,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MealsCategoriesScreen() {
     val viewModel : MealsCategoriesViewModel = viewModel() //(Ch74, 16:00有說明,簡單來說只要存在過,就不會再instantiated一次)
-    val rememberedMeals: MutableState<List<MealResponse>> = remember { mutableStateOf(emptyList<MealResponse>()) }
-    val coroutineScope = rememberCoroutineScope()
-
-    LaunchedEffect(key1 = "GET_MEALS") {
-        coroutineScope.launch(Dispatchers.IO) {  // Ch82 5:00
-            val meals = viewModel.getMeals()
-            rememberedMeals.value = meals
-        }
-    }
-
+    val meals = viewModel.mealsState.value
     LazyColumn {
-        items(rememberedMeals.value) { meal ->
+        items(meals) { meal ->
             Text(text = meal.name)
         }
     }
