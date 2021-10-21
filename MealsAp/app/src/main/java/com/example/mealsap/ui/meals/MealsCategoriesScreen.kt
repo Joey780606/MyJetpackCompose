@@ -26,18 +26,18 @@ import com.example.model.response.MealResponse
 
 
 @Composable
-fun MealsCategoriesScreen() {
+fun MealsCategoriesScreen(navigationCallback: (String) -> Unit) {   //Ch87, 11:49 有說 navigationCallback是一function,參數是字串,沒有回傳值
     val viewModel : MealsCategoriesViewModel = viewModel() //(Ch74, 16:00有說明,簡單來說只要存在過,就不會再instantiated一次)
     val meals = viewModel.mealsState.value
     LazyColumn(contentPadding = PaddingValues(16.dp)) {
         items(meals) { meal ->
-            MealCategory(meal)
+            MealCategory(meal, navigationCallback)
         }
     }
 }
 
 @Composable
-fun MealCategory(meal: MealResponse) {
+fun MealCategory(meal: MealResponse, navigationCallback: (String) -> Unit) {
     var isExpanded by remember { mutableStateOf(false) }
     Card(
         shape = RoundedCornerShape(8.dp),
@@ -45,6 +45,9 @@ fun MealCategory(meal: MealResponse) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 16.dp)
+            .clickable {
+                navigationCallback(meal.id)
+            }
     ) {
         Row(modifier = Modifier.animateContentSize()) {
             // Image
@@ -98,6 +101,6 @@ fun MealCategory(meal: MealResponse) {
 @Composable
 fun DefaultPreview() {
     MealsApTheme {
-        MealsCategoriesScreen()
+        //MealsCategoriesScreen()
     }
 }
