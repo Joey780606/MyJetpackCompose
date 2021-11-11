@@ -3,19 +3,19 @@ package com.example.profilecardlayout
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.profilecardlayout.ui.theme.ProfileCardLayoutTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,9 +36,19 @@ fun MainScreen() {
 
 @Composable
 fun ProfileCard() {
-    Card(modifier = Modifier.fillMaxWidth(),
-        elevation = 8.dp) {
-        Row(modifier = Modifier.wrapContentSize()) { //Card 只能放一個Composable,所以要用Row(), Column() 來放多個Composable
+    //Card(modifier = Modifier.fillMaxWidth(),  //First code
+    Card(modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth()
+            .wrapContentHeight(align = Alignment.Top),    //Second modify
+        elevation = 8.dp
+    ) {
+        Row(
+            //modifier = Modifier.wrapContentSize(),
+            modifier = Modifier.fillMaxWidth(), //如果不設這個,而是使用wrapContentSize(),就算設了 Arrangement.Start, 畫面也不會移到左邊,
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
+        ) { //Card 只能放一個Composable,所以要用Row(), Column() 來放多個Composable
             ProfilePicture()
             ProfileContent()
         }
@@ -47,12 +57,21 @@ fun ProfileCard() {
 
 @Composable
 fun ProfilePicture() {
-
+    Card(
+        shape = CircleShape,
+        border = BorderStroke(width = 2.dp, color = Color.Green),
+        modifier = Modifier.padding(16.dp),
+        elevation = 4.dp
+    ) { // 因為要把照片變圓型,所以外面要加一個Card來協助作成圓形的樣子
+        Image(painter = painterResource(id = R.drawable.profile_picture), contentDescription = "",
+            modifier = Modifier.size(72.dp),   //寫法已跟作者的方式不同了
+            contentScale = ContentScale.Crop)
+    }
 }
 
 @Composable
 fun ProfileContent() {
-
+    Text("John Doe")
 }
 
 @Preview(showBackground = true)
