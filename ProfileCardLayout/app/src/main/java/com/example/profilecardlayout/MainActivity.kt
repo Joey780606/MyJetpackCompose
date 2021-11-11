@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,9 +39,9 @@ fun MainScreen() {
 fun ProfileCard() {
     //Card(modifier = Modifier.fillMaxWidth(),  //First code
     Card(modifier = Modifier
-            .padding(16.dp)
-            .fillMaxWidth()
-            .wrapContentHeight(align = Alignment.Top),    //Second modify
+        .padding(16.dp)
+        .fillMaxWidth()
+        .wrapContentHeight(align = Alignment.Top),    //Second modify
         elevation = 8.dp
     ) {
         Row(
@@ -71,7 +72,23 @@ fun ProfilePicture() {
 
 @Composable
 fun ProfileContent() {
-    Text("John Doe")
+    Column(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = "John Doe",
+            style = MaterialTheme.typography.h5
+        )
+        CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+            Text(
+                text = "Active now",
+                style = MaterialTheme.typography.body2
+            )
+        }
+    }
+
 }
 
 @Preview(showBackground = true)
