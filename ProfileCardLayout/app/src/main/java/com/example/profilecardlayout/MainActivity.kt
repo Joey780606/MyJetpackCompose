@@ -17,12 +17,16 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.profilecardlayout.ui.theme.MyTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MainScreen()
+            MyTheme {
+                //這裡不用 MyTheme(),而用 MyTheme {} 的原因,不知是否為Lambda處理的關係
+                MainScreen()
+            }
         }
     }
 }
