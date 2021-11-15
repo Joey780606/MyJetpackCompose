@@ -18,6 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.profilecardlayout.ui.theme.MyTheme
+import com.example.profilecardlayout.ui.theme.lightGreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,8 +34,9 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen() {
-    Surface(modifier = Modifier.fillMaxWidth(),
-        color = Color.LightGray) {
+    Surface(modifier = Modifier.fillMaxSize(),
+        //color = Color.LightGray
+    ) {
         ProfileCard()
     }
 }
@@ -46,7 +48,8 @@ fun ProfileCard() {
         .padding(16.dp)
         .fillMaxWidth()
         .wrapContentHeight(align = Alignment.Top),    //Second modify
-        elevation = 8.dp
+        elevation = 8.dp,
+        backgroundColor = Color.White
     ) {
         Row(
             //modifier = Modifier.wrapContentSize(),
@@ -64,7 +67,8 @@ fun ProfileCard() {
 fun ProfilePicture() {
     Card(
         shape = CircleShape,
-        border = BorderStroke(width = 2.dp, color = Color.Green),
+        border = BorderStroke(width = 2.dp, color = MaterialTheme.colors.lightGreen),
+           // color 的設定,要變成 theme/Color.kt  的 @Composable 設定,才能用
         modifier = Modifier.padding(16.dp),
         elevation = 4.dp
     ) { // 因為要把照片變圓型,所以外面要加一個Card來協助作成圓形的樣子
