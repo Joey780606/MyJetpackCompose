@@ -8,6 +8,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
@@ -34,12 +36,27 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen() {
-    Surface(modifier = Modifier.fillMaxSize(),
-        //color = Color.LightGray
-    ) {
-        ProfileCard()
+    Scaffold(topBar = { AppBar() } ) {  // AppBar()也要加 {}, 因為他是composable
+        Surface(modifier = Modifier.fillMaxSize(),
+            //color = Color.LightGray
+        ) {
+            ProfileCard()
+        }
     }
 }
+
+@Composable
+fun AppBar() {
+    TopAppBar(
+        navigationIcon = { Icon(Icons.Default.Home,
+            "123",
+            Modifier.padding(horizontal = 12.dp))},
+        title = { Text("Messaging Application users") }
+        // 1. Icon function後面要加 contentDescription,否則會錯(可看原始code)
+        // 2. 上述二個要加 { } 是因為裡面要放composable,是一堆程式的集合,所以要用 {}
+    )
+}
+
 
 @Composable
 fun ProfileCard() {
