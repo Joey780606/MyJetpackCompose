@@ -40,7 +40,11 @@ fun MainScreen() {
         Surface(modifier = Modifier.fillMaxSize(),
             //color = Color.LightGray
         ) {
-            ProfileCard()
+            Column() {
+                ProfileCard()
+                ProfileCard()
+            }
+
         }
     }
 }
@@ -62,7 +66,7 @@ fun AppBar() {
 fun ProfileCard() {
     //Card(modifier = Modifier.fillMaxWidth(),  //First code
     Card(modifier = Modifier
-        .padding(16.dp)
+        .padding(top = 8.dp, bottom = 4.dp, start = 16.dp, end = 16.dp)
         .fillMaxWidth()
         .wrapContentHeight(align = Alignment.Top),    //Second modify
         elevation = 8.dp,
