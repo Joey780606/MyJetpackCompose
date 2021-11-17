@@ -47,4 +47,5 @@ fun MyTheme(
         shapes = Shapes,
         content = content
     )
+    // MyTheme 會設定一組 MaterialTheme,其中會把 Typography (這個變數的宣告在 Theme.kt 裡設定) 放入,所以文字才會因為在 Type.kt 加了 h5而有所變化)
 }
