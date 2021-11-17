@@ -119,5 +119,7 @@ fun ProfileContent() {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    MainScreen()
+    MyTheme {
+        MainScreen()
+    }
 }
