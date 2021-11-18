@@ -19,8 +19,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.profilecardlayout.ui.UserProfile
 import com.example.profilecardlayout.ui.theme.MyTheme
 import com.example.profilecardlayout.ui.theme.lightGreen
+import com.example.profilecardlayout.ui.userProfileList
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,14 +37,14 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainScreen() {
+fun MainScreen(userProfiles: List<UserProfile> = userProfileList) {
     Scaffold(topBar = { AppBar() } ) {  // AppBar()也要加 {}, 因為他是composable
         Surface(modifier = Modifier.fillMaxSize(),
             //color = Color.LightGray
         ) {
             Column() {
-                ProfileCard()
-                ProfileCard()
+                for(userProfile in userProfiles)
+                    ProfileCard(userProfile)
             }
 
         }
@@ -63,7 +65,7 @@ fun AppBar() {
 
 
 @Composable
-fun ProfileCard() {
+fun ProfileCard(userProfile: UserProfile) {
     //Card(modifier = Modifier.fillMaxWidth(),  //First code
     Card(modifier = Modifier
         .padding(top = 8.dp, bottom = 4.dp, start = 16.dp, end = 16.dp)
@@ -78,41 +80,54 @@ fun ProfileCard() {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start
         ) { //Card 只能放一個Composable,所以要用Row(), Column() 來放多個Composable
-            ProfilePicture()
-            ProfileContent()
+            ProfilePicture(userProfile.drawableId, userProfile.status)
+            ProfileContent(userProfile.name, userProfile.status)
         }
     }
 }
 
 @Composable
-fun ProfilePicture() {
+fun ProfilePicture(drawableId: Int, onlineStatus: Boolean) {
     Card(
         shape = CircleShape,
-        border = BorderStroke(width = 2.dp, color = MaterialTheme.colors.lightGreen),
-           // color 的設定,要變成 theme/Color.kt  的 @Composable 設定,才能用
+        border = BorderStroke(
+            width = 2.dp,
+            color = if (onlineStatus)
+                MaterialTheme.colors.lightGreen
+            else Color.Red
+        ), // color 的設定,要變成 theme/Color.kt  的 @Composable 設定,才能用
         modifier = Modifier.padding(16.dp),
         elevation = 4.dp
     ) { // 因為要把照片變圓型,所以外面要加一個Card來協助作成圓形的樣子
-        Image(painter = painterResource(id = R.drawable.profile_picture), contentDescription = "",
+        Image(painter = painterResource(id = drawableId),
+            contentDescription = "",
             modifier = Modifier.size(72.dp),   //寫法已跟作者的方式不同了
             contentScale = ContentScale.Crop)
     }
 }
 
 @Composable
-fun ProfileContent() {
+fun ProfileContent(userName: String, onlineStatus: Boolean) {
     Column(
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth()
     ) {
-        Text(
-            text = "John Doe",
-            style = MaterialTheme.typography.h5
-        )
+        CompositionLocalProvider(LocalContentAlpha provides (
+                if (onlineStatus) 1f
+                else ContentAlpha.medium
+                )
+        ) {
+            Text(
+                text = userName,
+                style = MaterialTheme.typography.h5
+            )
+        }
         CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
             Text(
-                text = "Active now",
+                text = if (onlineStatus)
+                    "Active now"
+                else "Offline now",
                 style = MaterialTheme.typography.body2
             )
         }
