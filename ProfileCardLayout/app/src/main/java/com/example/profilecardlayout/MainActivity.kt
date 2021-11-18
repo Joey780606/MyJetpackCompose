@@ -1,11 +1,14 @@
 package com.example.profilecardlayout
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -42,11 +45,12 @@ fun MainScreen(userProfiles: List<UserProfile> = userProfileList) {
         Surface(modifier = Modifier.fillMaxSize(),
             //color = Color.LightGray
         ) {
-            Column() {
-                for(userProfile in userProfiles)
-                    ProfileCard(userProfile)
+            LazyColumn {
+                items(userProfiles) { userProfile ->
+                    Log.v("MainActivity","data in") //當在scroll時,這裡會跟著跑動
+                    ProfileCard(userProfile = userProfile)
+                }
             }
-
         }
     }
 }
