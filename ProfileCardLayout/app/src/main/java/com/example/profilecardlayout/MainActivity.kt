@@ -22,6 +22,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberImagePainter
+import coil.transform.CircleCropTransformation
 import com.example.profilecardlayout.ui.UserProfile
 import com.example.profilecardlayout.ui.theme.MyTheme
 import com.example.profilecardlayout.ui.theme.lightGreen
@@ -103,10 +105,14 @@ fun ProfilePicture(drawableId: Int, onlineStatus: Boolean) {
         modifier = Modifier.padding(16.dp),
         elevation = 4.dp
     ) { // 因為要把照片變圓型,所以外面要加一個Card來協助作成圓形的樣子
-        Image(painter = painterResource(id = drawableId),
-            contentDescription = "",
-            modifier = Modifier.size(72.dp),   //寫法已跟作者的方式不同了
-            contentScale = ContentScale.Crop)
+        Image(
+            painter = rememberImagePainter(data = drawableId,
+                builder = {
+                    transformations(CircleCropTransformation())
+                },),
+            contentDescription = "Profile picture description",
+            modifier = Modifier.size(72.dp)
+        )
     }
 }
 
