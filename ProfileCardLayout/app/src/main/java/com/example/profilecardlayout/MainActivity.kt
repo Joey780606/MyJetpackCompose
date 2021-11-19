@@ -18,8 +18,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
@@ -86,14 +84,14 @@ fun ProfileCard(userProfile: UserProfile) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start
         ) { //Card 只能放一個Composable,所以要用Row(), Column() 來放多個Composable
-            ProfilePicture(userProfile.drawableId, userProfile.status)
+            ProfilePicture(userProfile.pictureUrl, userProfile.status)
             ProfileContent(userProfile.name, userProfile.status)
         }
     }
 }
 
 @Composable
-fun ProfilePicture(drawableId: Int, onlineStatus: Boolean) {
+fun ProfilePicture(pictureUrl: String, onlineStatus: Boolean) {
     Card(
         shape = CircleShape,
         border = BorderStroke(
@@ -106,7 +104,7 @@ fun ProfilePicture(drawableId: Int, onlineStatus: Boolean) {
         elevation = 4.dp
     ) { // 因為要把照片變圓型,所以外面要加一個Card來協助作成圓形的樣子
         Image(
-            painter = rememberImagePainter(data = drawableId,
+            painter = rememberImagePainter(data = pictureUrl,
                 builder = {
                     transformations(CircleCropTransformation())
                 },),
