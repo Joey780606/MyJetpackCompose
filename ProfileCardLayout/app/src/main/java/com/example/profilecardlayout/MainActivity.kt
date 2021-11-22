@@ -23,9 +23,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import coil.compose.rememberImagePainter
 import coil.transform.CircleCropTransformation
 import com.example.profilecardlayout.ui.UserProfile
@@ -52,8 +54,12 @@ fun UsersApplication(userProfiles: List<UserProfile> = userProfileList) {
         composable("users_list") {
             UserListScreen(userProfiles, navController)
         }
-        composable("users_details") {
-            UserProfileDetailScreen()
+        composable("users_details/{userId}",    //這與下面二個(共三個) userId 名字要一致,要改成userIa也可以,但就要一致,因為下面的操作是要取這個值來處理
+        arguments = listOf(navArgument("userId") {
+            type = NavType.IntType
+        })) { navBackStackEntry ->
+            UserProfileDetailScreen(navBackStackEntry.arguments!!.getInt("userId"))
+            // navBackStackEntry是composable的取後一個變數,所以也是用Lambda trailing
         }
     }
 
@@ -68,7 +74,7 @@ fun UserListScreen(userProfiles: List<UserProfile>, navController: NavController
                 items(userProfiles) { userProfile ->
                     Log.v("MainActivity","data in") //當在scroll時,這裡會跟著跑動
                     ProfileCard(userProfile = userProfile) {  //要在這裡做 Navigation的處理
-                        navController?.navigate("users_details") //1.要選參數是route的那個.  2. 在Preview沒有 navController,值為null,所以要用?
+                        navController?.navigate("users_details/${userProfile.id}") //1.要選參數是route的那個.  2. 在Preview沒有 navController,值為null,所以要用?
                     } //Lambda trailing,最後面的參數,就可以用 { } 包起來
                 }
             }
@@ -77,7 +83,8 @@ fun UserListScreen(userProfiles: List<UserProfile>, navController: NavController
 }
 
 @Composable
-fun UserProfileDetailScreen(userProfile: UserProfile = userProfileList[0]) {
+fun UserProfileDetailScreen(userId: Int) {
+    val userProfile = userProfileList.first { userProfile -> userId == userProfile.id }
     Scaffold(topBar = { AppBar() } ) {  // AppBar()也要加 {}, 因為他是composable
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -192,7 +199,7 @@ fun ProfileContent(userName: String, onlineStatus: Boolean, alignment: Alignment
 @Composable
 fun UserProfileDetailPreview() {
     MyTheme {
-        UserProfileDetailScreen()
+        UserProfileDetailScreen(userId = 0) //只要讓他有值就好,在Preview沒有很重要
     }
 }
 
