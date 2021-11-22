@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,6 +22,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
 import coil.transform.CircleCropTransformation
 import com.example.profilecardlayout.ui.UserProfile
@@ -34,14 +39,27 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyTheme {
                 //這裡不用 MyTheme(),而用 MyTheme {} 的原因,不知是否為Lambda處理的關係
-                UserListScreen()
+                UsersApplication()
             }
         }
     }
 }
 
 @Composable
-fun UserListScreen(userProfiles: List<UserProfile> = userProfileList) {
+fun UsersApplication(userProfiles: List<UserProfile> = userProfileList) {
+    val navController = rememberNavController()
+    NavHost(navController = navController, startDestination = "users_list") {
+        composable("users_list") {
+            UserListScreen(userProfiles, navController)
+        }
+        composable("users_details") {
+            UserProfileDetailScreen()
+        }
+    }
+
+}
+@Composable
+fun UserListScreen(userProfiles: List<UserProfile>, navController: NavController?) { //navController型態要加?,表示可以為null
     Scaffold(topBar = { AppBar() } ) {  // AppBar()也要加 {}, 因為他是composable
         Surface(modifier = Modifier.fillMaxSize(),
             //color = Color.LightGray
@@ -49,8 +67,30 @@ fun UserListScreen(userProfiles: List<UserProfile> = userProfileList) {
             LazyColumn {
                 items(userProfiles) { userProfile ->
                     Log.v("MainActivity","data in") //當在scroll時,這裡會跟著跑動
-                    ProfileCard(userProfile = userProfile)
+                    ProfileCard(userProfile = userProfile) {  //要在這裡做 Navigation的處理
+                        navController?.navigate("users_details") //1.要選參數是route的那個.  2. 在Preview沒有 navController,值為null,所以要用?
+                    } //Lambda trailing,最後面的參數,就可以用 { } 包起來
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun UserProfileDetailScreen(userProfile: UserProfile = userProfileList[0]) {
+    Scaffold(topBar = { AppBar() } ) {  // AppBar()也要加 {}, 因為他是composable
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            //color = Color.LightGray
+        ) {
+            Column(
+                //modifier = Modifier.wrapContentSize(),
+                modifier = Modifier.fillMaxWidth(), //如果不設這個,而是使用wrapContentSize(),就算設了 Arrangement.Start, 畫面也不會移到左邊,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
+            ) { //Card 只能放一個Composable,所以要用Row(), Column() 來放多個Composable
+                ProfilePicture(userProfile.pictureUrl, userProfile.status, 240.dp)
+                ProfileContent(userProfile.name, userProfile.status, Alignment.CenterHorizontally)
             }
         }
     }
@@ -70,12 +110,13 @@ fun AppBar() {
 
 
 @Composable
-fun ProfileCard(userProfile: UserProfile) {
+fun ProfileCard(userProfile: UserProfile, clickAction: () -> Unit) {    //重要,有click的處理
     //Card(modifier = Modifier.fillMaxWidth(),  //First code
     Card(modifier = Modifier
         .padding(top = 8.dp, bottom = 4.dp, start = 16.dp, end = 16.dp)
         .fillMaxWidth()
-        .wrapContentHeight(align = Alignment.Top),    //Second modify
+        .wrapContentHeight(align = Alignment.Top) //Second modify
+        .clickable(onClick = { clickAction.invoke() }), //重要,有click的處理
         elevation = 8.dp,
         backgroundColor = Color.White
     ) {
@@ -147,26 +188,6 @@ fun ProfileContent(userName: String, onlineStatus: Boolean, alignment: Alignment
 
 }
 
-@Composable
-fun UserProfileDetailScreen(userProfile: UserProfile = userProfileList[0]) {
-    Scaffold(topBar = { AppBar() } ) {  // AppBar()也要加 {}, 因為他是composable
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            //color = Color.LightGray
-        ) {
-            Column(
-                //modifier = Modifier.wrapContentSize(),
-                modifier = Modifier.fillMaxWidth(), //如果不設這個,而是使用wrapContentSize(),就算設了 Arrangement.Start, 畫面也不會移到左邊,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top
-            ) { //Card 只能放一個Composable,所以要用Row(), Column() 來放多個Composable
-                ProfilePicture(userProfile.pictureUrl, userProfile.status, 240.dp)
-                ProfileContent(userProfile.name, userProfile.status, Alignment.CenterHorizontally)
-            }
-        }
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 fun UserProfileDetailPreview() {
@@ -179,6 +200,6 @@ fun UserProfileDetailPreview() {
 @Composable
 fun UserListPreview() {
     MyTheme {
-        UserListScreen()
+        UserListScreen(userProfiles = userProfileList, null)    //在Preview裡,沒有navigation,所以參數2是null
     }
 }
