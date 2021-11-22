@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import coil.transform.CircleCropTransformation
@@ -33,14 +34,14 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyTheme {
                 //這裡不用 MyTheme(),而用 MyTheme {} 的原因,不知是否為Lambda處理的關係
-                MainScreen()
+                UserListScreen()
             }
         }
     }
 }
 
 @Composable
-fun MainScreen(userProfiles: List<UserProfile> = userProfileList) {
+fun UserListScreen(userProfiles: List<UserProfile> = userProfileList) {
     Scaffold(topBar = { AppBar() } ) {  // AppBar()也要加 {}, 因為他是composable
         Surface(modifier = Modifier.fillMaxSize(),
             //color = Color.LightGray
@@ -84,14 +85,14 @@ fun ProfileCard(userProfile: UserProfile) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start
         ) { //Card 只能放一個Composable,所以要用Row(), Column() 來放多個Composable
-            ProfilePicture(userProfile.pictureUrl, userProfile.status)
-            ProfileContent(userProfile.name, userProfile.status)
+            ProfilePicture(userProfile.pictureUrl, userProfile.status, 72.dp)
+            ProfileContent(userProfile.name, userProfile.status, Alignment.Start)
         }
     }
 }
 
 @Composable
-fun ProfilePicture(pictureUrl: String, onlineStatus: Boolean) {
+fun ProfilePicture(pictureUrl: String, onlineStatus: Boolean, imageSize: Dp) {
     Card(
         shape = CircleShape,
         border = BorderStroke(
@@ -100,7 +101,9 @@ fun ProfilePicture(pictureUrl: String, onlineStatus: Boolean) {
                 MaterialTheme.colors.lightGreen
             else Color.Red
         ), // color 的設定,要變成 theme/Color.kt  的 @Composable 設定,才能用
-        modifier = Modifier.padding(16.dp),
+        modifier = Modifier
+            .padding(16.dp)
+            .size(imageSize),
         elevation = 4.dp
     ) { // 因為要把照片變圓型,所以外面要加一個Card來協助作成圓形的樣子
         Image(
@@ -115,11 +118,12 @@ fun ProfilePicture(pictureUrl: String, onlineStatus: Boolean) {
 }
 
 @Composable
-fun ProfileContent(userName: String, onlineStatus: Boolean) {
+fun ProfileContent(userName: String, onlineStatus: Boolean, alignment: Alignment.Horizontal) {
     Column(
         modifier = Modifier
-            .padding(8.dp)
-            .fillMaxWidth()
+            .padding(8.dp),
+        //.fillMaxWidth() //這樣只會使用他的值的最大寬度,而非螢幕的最大寬度,這不符合第二畫面的需求,所以要註解掉
+        horizontalAlignment = alignment
     ) {
         CompositionLocalProvider(LocalContentAlpha provides (
                 if (onlineStatus) 1f
@@ -143,10 +147,38 @@ fun ProfileContent(userName: String, onlineStatus: Boolean) {
 
 }
 
+@Composable
+fun UserProfileDetailScreen(userProfile: UserProfile = userProfileList[0]) {
+    Scaffold(topBar = { AppBar() } ) {  // AppBar()也要加 {}, 因為他是composable
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            //color = Color.LightGray
+        ) {
+            Column(
+                //modifier = Modifier.wrapContentSize(),
+                modifier = Modifier.fillMaxWidth(), //如果不設這個,而是使用wrapContentSize(),就算設了 Arrangement.Start, 畫面也不會移到左邊,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
+            ) { //Card 只能放一個Composable,所以要用Row(), Column() 來放多個Composable
+                ProfilePicture(userProfile.pictureUrl, userProfile.status, 240.dp)
+                ProfileContent(userProfile.name, userProfile.status, Alignment.CenterHorizontally)
+            }
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
-fun DefaultPreview() {
+fun UserProfileDetailPreview() {
     MyTheme {
-        MainScreen()
+        UserProfileDetailScreen()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun UserListPreview() {
+    MyTheme {
+        UserListScreen()
     }
 }
