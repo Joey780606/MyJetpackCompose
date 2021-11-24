@@ -13,16 +13,19 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -58,7 +61,7 @@ fun UsersApplication(userProfiles: List<UserProfile> = userProfileList) {
         arguments = listOf(navArgument("userId") {
             type = NavType.IntType
         })) { navBackStackEntry ->
-            UserProfileDetailScreen(navBackStackEntry.arguments!!.getInt("userId"))
+            UserProfileDetailScreen(navBackStackEntry.arguments!!.getInt("userId"), navController)
             // navBackStackEntry是composable的取後一個變數,所以也是用Lambda trailing
         }
     }
@@ -66,7 +69,7 @@ fun UsersApplication(userProfiles: List<UserProfile> = userProfileList) {
 }
 @Composable
 fun UserListScreen(userProfiles: List<UserProfile>, navController: NavController?) { //navController型態要加?,表示可以為null
-    Scaffold(topBar = { AppBar() } ) {  // AppBar()也要加 {}, 因為他是composable
+    Scaffold(topBar = { AppBar("Users list", Icons.Default.Home) {} }) {  // 1. AppBar()也要加 {}, 因為他是composable 2.Home後的 {} 是 AppBar的第三個參數,是按下時要做的動作,因這裡不用有動作,所以可以為 {}
         Surface(modifier = Modifier.fillMaxSize(),
             //color = Color.LightGray
         ) {
@@ -83,9 +86,16 @@ fun UserListScreen(userProfiles: List<UserProfile>, navController: NavController
 }
 
 @Composable
-fun UserProfileDetailScreen(userId: Int) {
+fun UserProfileDetailScreen(userId: Int, navController: NavHostController?) {   // navController要加 ? 是因為 @Preview 時此值只能帶 null,所以要做這樣的處理
     val userProfile = userProfileList.first { userProfile -> userId == userProfile.id }
-    Scaffold(topBar = { AppBar() } ) {  // AppBar()也要加 {}, 因為他是composable
+    Scaffold(topBar = {
+        AppBar(
+            "User profile details",
+            Icons.Default.ArrowBack
+        ) {
+            navController?.navigateUp()  //回到上一頁
+        }   //Lamdba trailing的最後一個參數
+    }) {  // AppBar()也要加 {}, 因為他是composable
         Surface(
             modifier = Modifier.fillMaxSize(),
             //color = Color.LightGray
@@ -104,12 +114,17 @@ fun UserProfileDetailScreen(userId: Int) {
 }
 
 @Composable
-fun AppBar() {
+fun AppBar(title: String, icon: ImageVector, iconClickAction: () -> Unit) { //iconClickAction: Lambda trailing,呼叫者帶來的參數,在此函式的某個方法去執行他
     TopAppBar(
-        navigationIcon = { Icon(Icons.Default.Home,
-            "123",
-            Modifier.padding(horizontal = 12.dp))},
-        title = { Text("Messaging Application users") }
+        navigationIcon = {
+            Icon(icon,
+                "123",
+                Modifier
+                    .padding(horizontal = 12.dp)
+                    .clickable(onClick = { iconClickAction.invoke() })
+            )
+        },
+        title = { Text(title) }
         // 1. Icon function後面要加 contentDescription,否則會錯(可看原始code)
         // 2. 上述二個要加 { } 是因為裡面要放composable,是一堆程式的集合,所以要用 {}
     )
@@ -199,7 +214,7 @@ fun ProfileContent(userName: String, onlineStatus: Boolean, alignment: Alignment
 @Composable
 fun UserProfileDetailPreview() {
     MyTheme {
-        UserProfileDetailScreen(userId = 0) //只要讓他有值就好,在Preview沒有很重要
+        UserProfileDetailScreen(userId = 0, null) //只要讓他有值就好,在Preview沒有很重要
     }
 }
 
